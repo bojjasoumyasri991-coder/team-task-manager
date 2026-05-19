@@ -10,44 +10,41 @@ app = Flask(__name__)
 
 app.config.from_object(Config)
 
-# Initialize database
 db.init_app(app)
 
-# Enable CORS
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True
 )
 
-# JWT
 JWTManager(app)
 
-# Import routes
+# IMPORT ROUTES
 from routes.auth import auth_bp
 from routes.projects import project_bp
 from routes.tasks import tasks_bp
 
-# Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(project_bp)
 app.register_blueprint(tasks_bp)
 
-# Home route
 @app.route('/')
 def home():
     return {"message": "Team Task Manager API Running"}
 
-# Create admin automatically
+# CREATE TABLES + ADMIN
 with app.app_context():
 
     db.create_all()
 
-    existing_admin = User.query.filter_by(
+    # CHECK ADMIN
+    admin = User.query.filter_by(
         email="admin@gmail.com"
     ).first()
 
-    if not existing_admin:
+    # CREATE ADMIN IF NOT EXISTS
+    if not admin:
 
         admin = User(
             name="Admin",
@@ -59,11 +56,7 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
-        print("Admin created successfully")
+        print("Admin created")
 
-    else:
-        print("Admin already exists")
-
-# Run app
 if __name__ == '__main__':
     app.run(debug=True)
