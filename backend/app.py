@@ -52,7 +52,7 @@ with app.app_context():
         admin = User(
             name="Admin",
             email="admin@gmail.com",
-            password=generate_password_hash("admin123"),
+            password=generate_password_hash("123456"),
             role="admin"
         )
 
